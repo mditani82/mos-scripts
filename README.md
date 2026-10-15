@@ -1,6 +1,8 @@
 # Mo's Scripts
 
-Save your shell scripts once, then run, stop and watch them from the Chrome toolbar.
+Save your shell scripts once, then run, stop and watch them from the Chrome toolbar. **macOS only.**
+
+![Mo's Scripts popup](store-assets/screenshot-1.png)
 
 Chrome extensions can't run programs on their own, so Mo's Scripts comes in two parts:
 
