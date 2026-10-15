@@ -1,0 +1,101 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Mo's Scripts</title>
+<style>
+  :root {
+    --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --border: #e5e5ea; --panel: #f5f5f7; --hover: #ececf0;
+    --accent: #0a66ff; --ok: #1f9d55; --err: #d93025; --sel: #e8f0ff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #1c1c1e; --fg: #f5f5f7; --muted: #98989d; --border: #38383a; --panel: #2c2c2e; --hover: #353538;
+            --accent: #3d8bff; --ok: #34c759; --err: #ff453a; --sel: #1e3355; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; width: 380px; background: var(--bg); color: var(--fg);
+         font: 13px/1.4 -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  h1 { margin: 0; font-size: 14px; font-weight: 600; }
+  main { padding: 12px 16px 16px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .row { display: flex; gap: 8px; align-items: center; }
+  input { flex: 1; min-width: 0; width: 100%; padding: 8px 10px; border-radius: 8px; font: inherit;
+          border: 1px solid var(--border); background: var(--bg); color: var(--fg); }
+  button { padding: 7px 12px; border-radius: 8px; font: inherit; font-weight: 500; cursor: pointer; white-space: nowrap;
+           border: 1px solid var(--border); background: var(--panel); color: var(--fg); }
+  button:hover:not(:disabled) { filter: brightness(.96); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.danger { background: var(--err); border-color: var(--err); color: #fff; }
+  button.ghost { background: none; border-color: transparent; color: var(--muted); padding: 4px 8px; }
+  button:disabled { opacity: .5; cursor: default; }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  #toggleAdd { font-size: 18px; line-height: 1; padding: 2px 9px; }
+  #addForm { padding: 10px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; }
+  ul { list-style: none; margin: 0; padding: 0; max-height: 320px; overflow-y: auto;
+       border: 1px solid var(--border); border-radius: 8px; }
+  li { border-bottom: 1px solid var(--border); }
+  li:last-child { border-bottom: 0; }
+  .line { display: flex; gap: 6px; align-items: center; padding: 5px 6px 5px 10px; cursor: pointer; }
+  .line:hover { background: var(--hover); }
+  li.sel .line { background: var(--sel); }
+  .alias { flex: 1; min-width: 0; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .prod { font-size: 10px; font-weight: 700; color: var(--err); border: 1px solid var(--err); border-radius: 4px; padding: 0 4px; }
+  .run { padding: 3px 10px; font-size: 12px; }
+  .live { font-size: 11px; font-weight: 600; color: var(--ok); white-space: nowrap; }
+  .del, .edit { visibility: hidden; }
+  .line:hover .del, .line:hover .edit { visibility: visible; }
+  .edit:hover { color: var(--accent); }
+  input.rename { flex: 1; padding: 3px 6px; font-weight: 500; }
+  .del:hover { color: var(--err); }
+  .path { display: none; padding: 0 10px 8px; color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
+  li.open .path { display: block; }
+  .empty { color: var(--muted); padding: 12px; cursor: default; }
+  .hint { color: var(--muted); font-size: 11px; }
+  kbd { font: 10px ui-monospace, Menlo, monospace; border: 1px solid var(--border); border-radius: 3px; padding: 0 3px; }
+  details { border: 1px solid var(--border); border-radius: 8px; background: var(--panel); }
+  summary { padding: 8px 12px; cursor: pointer; font-weight: 600; font-size: 12px; }
+  #status.ok { color: var(--ok); } #status.err { color: var(--err); } #status.busy { color: var(--muted); }
+  pre { margin: 0; padding: 0 12px 10px; max-height: 180px; overflow: auto; white-space: pre-wrap; word-break: break-word;
+        font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  #toggleHelp { font-size: 14px; font-weight: 600; padding: 2px 9px; }
+  #help { padding: 10px 12px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; }
+  ul.help { max-height: none; border: 0; border-radius: 0; padding-left: 16px; list-style: disc; display: grid; gap: 6px; font-size: 12px; }
+  ul.help li { border: 0; }
+  code { font: 11px ui-monospace, Menlo, monospace; overflow-wrap: anywhere; }
+  .hidden { display: none; }
+</style>
+<body>
+  <header>
+    <h1>Mo's Scripts <span id="ver" class="hint"></span></h1>
+    <div class="row" style="gap:2px">
+      <button id="toggleHelp" class="ghost" title="Help" aria-expanded="false">?</button>
+      <button id="toggleAdd" class="ghost" title="Add script" aria-expanded="false">+</button>
+    </div>
+  </header>
+  <main>
+    <div id="help" class="hidden">
+      <ul class="help">
+        <li><b>+ Add</b> a script: optional alias, then pick the .sh file. No alias → file name is used.</li>
+        <li><b>Search</b> filters by alias or path. <kbd>↑</kbd><kbd>↓</kbd> select, <kbd>Enter</kbd> runs.</li>
+        <li><b>Recent first</b>: last-run scripts sort to the top.</li>
+        <li><b>Click a row</b> to see its full path and terminal output (live while running). Hover for <b>✎</b> to rename or <b>✕</b> to remove (stops it if running; file is untouched).</li>
+        <li><b><span class="prod">PROD</span></b> = path contains <code>/prod/</code> or <code>/production/</code>. Needs a second <b>Confirm</b> within 3s.</li>
+        <li><b>Long-running</b> scripts (tunnels, servers) keep going in the background after 10s (badge <b>ON</b>). Any running script shows <span class="live">● running</span> and a <b>Stop</b> button.</li>
+        <li><b>Output</b> of the last run shows below the list. Full logs: <code>~/.mos-scripts/logs/Full logs: <code>~/run-sh-extension/logs/&lt;alias&gt;.log</code>lt;aliasFull logs: <code>~/run-sh-extension/logs/&lt;alias&gt;.log</code>gt;.log</code></li>
+        <li>Scripts run in their own folder with your login shell's PATH. They can't prompt for input.</li>
+      </ul>
+    </div>
+    <div id="addForm" class="hidden">
+      <div class="row">
+        <input id="alias" placeholder="Alias (optional, defaults to file name)" maxlength="60">
+        <button id="add">Choose…</button>
+      </div>
+    </div>
+    <input id="search" type="search" placeholder="Search scripts…" autofocus autocomplete="off">
+    <ul id="list"><li class="empty">Loading…</li></ul>
+    <div class="hint"><kbd>↑</kbd><kbd>↓</kbd> select · <kbd>Enter</kbd> run · prod scripts need a second confirm</div>
+    <details id="result" class="hidden" open>
+      <summary><span id="runName"></span> <span id="status"></span></summary>
+      <pre id="out"></pre>
+    </details>
+  </main>
+  <script src="popup.js"></script>
+</body>

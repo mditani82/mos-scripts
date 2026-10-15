@@ -1,0 +1,13 @@
+# Private: signing key for the dev build's fixed ID
+key.pem
+# Local data from the pre-~/.mos-scripts setup (contains personal script paths)
+scripts.json
+running.json
+logs/
+saved_script.txt
+extension_id.txt
+# Build output: attached to GitHub releases instead
+dist/
+STORE_LISTING.md
+__pycache__/
+.DS_Store
