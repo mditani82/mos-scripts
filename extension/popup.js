@@ -186,12 +186,51 @@ $('add').onclick = async () => {
   if (res.scripts) { scripts = res.scripts; active = new Set(res.running || []); render(); }
 };
 
-Promise.all([send({ action: 'list' }), chrome.storage.local.get(['lastRunAt', 'lastRun'])]).then(([res, st]) => {
-  scripts = res.scripts || {};
+// Chrome's error tells us why the helper can't be reached.
+const SETUP = {
+  notMac: ["Mo's Scripts needs macOS for now", 'The helper that runs your scripts only supports macOS.'],
+  missing: ['Install the helper', "Chrome extensions can't run programs on their own. A small helper on your Mac does it. Install it once:"],
+  forbidden: ['Update the helper', 'The helper on this Mac is from an older version. Install the latest one:'],
+  broken: ["The helper didn't start", 'Run install.sh again. If that doesn\'t help, include the error below in an issue.'],
+};
+let setupTimer = null;
+
+function setMode(setup) {
+  ['search', 'list', 'hint', 'toggleAdd'].forEach((id) => $(id).classList.toggle('hidden', setup));
+  $('setup').classList.toggle('hidden', !setup);
+  if (setup) ['result', 'addForm'].forEach((id) => $(id).classList.add('hidden'));
+}
+
+function showSetup(err) {
+  const mac = /mac/i.test(navigator.userAgentData?.platform || navigator.platform);
+  const kind = !mac ? 'notMac' : /not found/i.test(err) || !err ? 'missing' : /forbidden/i.test(err) ? 'forbidden' : 'broken';
+  setMode(true);
+  [$('setupTitle').textContent, $('setupIntro').textContent] = SETUP[kind];
+  $('setupSteps').classList.toggle('hidden', kind === 'notMac');
+  $('setupErr').textContent = err;
+  $('setupErr').classList.toggle('hidden', kind !== 'broken');
+  clearTimeout(setupTimer);
+  if (mac) setupTimer = setTimeout(load, 2000);  // pick up the install without reopening the popup
+}
+
+async function load() {
+  const [res, st] = await Promise.all([send({ action: 'list' }), chrome.storage.local.get(['lastRunAt', 'lastRun'])]);
+  if (!res.scripts) return showSetup(res.stderr || '');
+  setMode(false);
+  scripts = res.scripts;
   active = new Set(res.running || []);
   lastRunAt = st.lastRunAt || {};
   if (st.lastRun) showRun(st.lastRun);
   render();
-});
+  $('search').focus();
+}
+
+$('copy').onclick = async () => {
+  await navigator.clipboard.writeText($('cmd').textContent);
+  $('copy').textContent = 'Copied';
+  setTimeout(() => ($('copy').textContent = 'Copy'), 1500);
+};
+
+load();
 
 $('ver').textContent = 'v' + chrome.runtime.getManifest().version;

@@ -9,7 +9,7 @@ Chrome extensions can't run programs on their own, so Mo's Scripts comes in two 
 
 ## Install the helper (macOS)
 
-1. Download `mos-scripts-helper-<version>.zip` from the [latest release](https://github.com/mditani82/Mos-scipts/releases/latest) and unzip it.
+1. Download `mos-scripts-helper-<version>.zip` from the [latest release](https://github.com/mditani82/mos-scripts/releases/latest) and unzip it.
 2. In Terminal:
    ```
    cd ~/Downloads/mos-scripts-helper

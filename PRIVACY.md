@@ -14,4 +14,4 @@ Mo's Scripts does not collect, store, transmit or sell any personal data.
 
 Removing the extension and running `uninstall.sh --all` deletes all of this data.
 
-Questions: open an issue at https://github.com/mditani82/Mos-scipts/issues
+Questions: open an issue at https://github.com/mditani82/mos-scripts/issues

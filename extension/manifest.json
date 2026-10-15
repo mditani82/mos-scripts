@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Mo's Scripts",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Save your shell scripts once, then run, stop and watch them from your toolbar. Requires the free macOS helper.",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuJcVdRNE4putRG/qdQFN4Qbj1Ey/mYl1XVm/4rQeem0aZrVF2JJ6pdEuXrE/POA/2DP4hLMIKEIKwsQs8O7XZJR7wIpYyKAAkaQbJ+jsmDwv2pxWII5rk+nl/nIDL0dUEwzVCJCvxKgmNr+lZIuGyuNVU90kvMI7SVTtzouBNl/Z2X2eNxKXPhtCaw7absDNQ2VySrzHy36N5E/aZmtbLwcf22yhBejneSbXCE7xdjTvi2BYO+jbm05Y9OvuthEXJkRrqPA83gU3BYCVYaiCFe6kwZK2KyJUgS/dKaE/I5ExTXFHiFD3ntHGWApaHHfV8bfPZhMG/jJQCNO5o/QOQwIDAQAB",
   "permissions": [

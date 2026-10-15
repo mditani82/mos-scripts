@@ -16,9 +16,15 @@ def reply(obj):
     sys.stdout.buffer.flush()
     sys.exit()
 
+def write_json(path, obj):
+    # Write to a temp file and swap it in, so a crash mid-write can't empty the file.
+    tmp = path + '.tmp'
+    with open(tmp, 'w') as f:
+        json.dump(obj, f, indent=2)
+    os.replace(tmp, path)
+
 def save(scripts):
-    with open(STORE, 'w') as f:
-        json.dump(scripts, f, indent=2)
+    write_json(STORE, scripts)
 
 scripts = json.load(open(STORE)) if os.path.exists(STORE) else {}
 if not scripts and os.path.exists(OLD):  # migrate the single saved script from the earlier version
@@ -48,8 +54,7 @@ def update_running(alias, pid=None):
         cur.pop(alias, None)
     else:
         cur[alias] = pid
-    with open(RUNNING, 'w') as f:
-        json.dump(cur, f)
+    write_json(RUNNING, cur)
     return cur
 
 def tail(path):

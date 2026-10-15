@@ -60,6 +60,18 @@
   ul.help { max-height: none; border: 0; border-radius: 0; padding-left: 16px; list-style: disc; display: grid; gap: 6px; font-size: 12px; }
   ul.help li { border: 0; }
   code { font: 11px ui-monospace, Menlo, monospace; overflow-wrap: anywhere; }
+  #setup { display: grid; gap: 8px; }
+  #setup.hidden { display: none; }
+  #setup h2 { margin: 0; font-size: 15px; }
+  #setup p { margin: 0; color: var(--muted); }
+  #setup ol { margin: 0; padding-left: 18px; display: grid; gap: 8px; }
+  #setup li { border: 0; }
+  #setup a { color: var(--accent); }
+  .cmd { display: flex; gap: 6px; align-items: center; margin-top: 4px; padding: 6px 6px 6px 10px;
+         background: var(--panel); border: 1px solid var(--border); border-radius: 8px; }
+  .cmd code { flex: 1; min-width: 0; }
+  .cmd button { padding: 3px 10px; font-size: 12px; }
+  #setupErr { padding: 8px 10px; }
   .hidden { display: none; }
 </style>
 <body>
@@ -79,7 +91,7 @@
         <li><b>Click a row</b> to see its full path and terminal output (live while running). Hover for <b>✎</b> to rename or <b>✕</b> to remove (stops it if running; file is untouched).</li>
         <li><b><span class="prod">PROD</span></b> = path contains <code>/prod/</code> or <code>/production/</code>. Needs a second <b>Confirm</b> within 3s.</li>
         <li><b>Long-running</b> scripts (tunnels, servers) keep going in the background after 10s (badge <b>ON</b>). Any running script shows <span class="live">● running</span> and a <b>Stop</b> button.</li>
-        <li><b>Output</b> of the last run shows below the list. Full logs: <code>~/.mos-scripts/logs/Full logs: <code>~/run-sh-extension/logs/&lt;alias&gt;.log</code>lt;aliasFull logs: <code>~/run-sh-extension/logs/&lt;alias&gt;.log</code>gt;.log</code></li>
+        <li><b>Output</b> of the last run shows below the list. Full logs: <code>~/.mos-scripts/logs/&lt;alias&gt;.log</code></li>
         <li>Scripts run in their own folder with your login shell's PATH. They can't prompt for input.</li>
       </ul>
     </div>
@@ -89,9 +101,21 @@
         <button id="add">Choose…</button>
       </div>
     </div>
+    <div id="setup" class="hidden">
+      <h2 id="setupTitle"></h2>
+      <p id="setupIntro"></p>
+      <ol id="setupSteps">
+        <li>Download the helper from the <a href="https://github.com/mditani82/mos-scripts/releases/latest" target="_blank" rel="noopener">latest release</a> and unzip it.</li>
+        <li>In Terminal, run:
+          <div class="cmd"><code id="cmd">cd ~/Downloads/mos-scripts-helper &amp;&amp; ./install.sh</code><button id="copy">Copy</button></div>
+        </li>
+        <li>This screen switches to your scripts by itself once it's installed.</li>
+      </ol>
+      <pre id="setupErr" class="hidden"></pre>
+    </div>
     <input id="search" type="search" placeholder="Search scripts…" autofocus autocomplete="off">
     <ul id="list"><li class="empty">Loading…</li></ul>
-    <div class="hint"><kbd>↑</kbd><kbd>↓</kbd> select · <kbd>Enter</kbd> run · prod scripts need a second confirm</div>
+    <div id="hint" class="hint"><kbd>↑</kbd><kbd>↓</kbd> select · <kbd>Enter</kbd> run · prod scripts need a second confirm</div>
     <details id="result" class="hidden" open>
       <summary><span id="runName"></span> <span id="status"></span></summary>
       <pre id="out"></pre>
